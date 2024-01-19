@@ -3,6 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { publicLinks } from "./Links";
 import { AppTheme } from "../assets/themes/Themes";
+import CustomNavigationBar from "../components/layouts/CustomNavigationBar";
 
 const Stack = createNativeStackNavigator();
 

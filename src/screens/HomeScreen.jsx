@@ -1,11 +1,21 @@
-import React from 'react'
+import React from "react";
+import { ScrollView, Text, View } from "react-native";
+import HomeProfileCard from "../components/atoms/home/HomeProfileCard";
+import { avatar } from "../assets/images/home/2024logo.png";
 
 function HomeScreen() {
   return (
-    <View style={{ flex: 1 }}>
-      <Text>Home</Text>
-    </View>
+    <ScrollView style={{backgroundColor:"#d5d5d5", padding:5}}>
+      <HomeProfileCard
+        title="Dalienst"
+        subtitle="Dalienst Owino"
+        imageSource={require("../assets/images/home/2024logo.png")}
+      />
+      <View style={{ flex: 1 }}>
+        <Text>Home</Text>
+      </View>
+    </ScrollView>
   );
 }
 
-export default HomeScreen
+export default HomeScreen;
