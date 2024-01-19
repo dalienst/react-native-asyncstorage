@@ -11,9 +11,6 @@ function HomeScreen() {
         subtitle="Dalienst Owino"
         imageSource={require("../assets/images/home/2024logo.png")}
       />
-      <View style={{ flex: 1 }}>
-        <Text>Home</Text>
-      </View>
     </ScrollView>
   );
 }
