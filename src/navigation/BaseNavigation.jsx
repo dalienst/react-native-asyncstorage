@@ -23,7 +23,7 @@ function BaseNavigation() {
         <Stack.Screen
           name={publicLinks.Home}
           component={Home}
-          options={{ title: "Home" }}
+          options={{ title: "Tech Africa Wallet" }}
         />
         <Stack.Screen
           name={publicLinks.Profile}
