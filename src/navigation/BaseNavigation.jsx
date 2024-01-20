@@ -12,6 +12,7 @@ const Home = React.lazy(() => import("../screens/HomeScreen"));
 const Profile = React.lazy(() => import("../screens/ProfileScreen"));
 const Card = React.lazy(() => import("../screens/CardScreen"));
 const Login = React.lazy(() => import("../screens/LoginScreen"));
+const Signup = React.lazy(() => import("../screens/SignupScreen"));
 
 function BaseNavigation() {
   const { user, isLoading } = useAuth();
@@ -42,7 +43,10 @@ function BaseNavigation() {
             />
           </>
         ) : (
-          <Stack.Screen name={publicLinks.Login} component={Login} />
+          <>
+            <Stack.Screen name={publicLinks.Login} component={Login} />
+            <Stack.Screen name={publicLinks.Signup} component={Signup} />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>

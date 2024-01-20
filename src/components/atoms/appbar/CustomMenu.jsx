@@ -37,7 +37,10 @@ const CustomMenu = ({ navigation }) => {
         ) : (
           <>
             {/* Menu items for non-authenticated users */}
-            <Menu.Item title="Sign Up" onPress={() => {}} />
+            <Menu.Item
+              title="Sign Up"
+              onPress={() => navigation.navigate(publicLinks.Signup)}
+            />
             <Menu.Item
               title="Log In"
               onPress={() => navigation.navigate(publicLinks.Login)}

@@ -2,7 +2,8 @@ const publicLinks = {
     Home:"Home",
     Profile:"Profile",
     Card:"Card",
-    Login:"Login"
+    Login:"Login",
+    Signup:"Signup"
 }
 
 const urls = {
