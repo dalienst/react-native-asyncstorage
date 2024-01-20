@@ -4,7 +4,7 @@ import { useAuth } from "../../../context/useAuth";
 import { publicLinks } from "../../../navigation/Links";
 
 const CustomMenu = ({ navigation }) => {
-  const { user } = useAuth;
+  const { isSignedIn } = useAuth();
   const [visible, setVisible] = React.useState(false);
 
   const openMenu = () => setVisible(true);
@@ -19,7 +19,7 @@ const CustomMenu = ({ navigation }) => {
           <Appbar.Action icon="menu" color="#ffffff" onPress={openMenu} />
         }
       >
-        {user ? (
+        {isSignedIn ? (
           <>
             <Menu.Item
               title="Dashboard"

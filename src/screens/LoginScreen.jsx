@@ -5,10 +5,9 @@ import BannerImage from "../components/atoms/login/BannerImage";
 import { AuthContext } from "../context/authContext";
 import { Formik } from "formik";
 import { LoginSchema } from "../validation/LoginValidation";
-import { publicLinks } from "../navigation/Links";
 
-const LoginScreen = ({ navigation }) => {
-  const { loginUser } = useContext(AuthContext);
+const LoginScreen = () => {
+  const { loginUser, setIsSignedIn } = useContext(AuthContext);
   const { colors } = useTheme();
   return (
     <ScrollView style={{ backgroundColor: colors.background, padding: 5 }}>
@@ -30,8 +29,8 @@ const LoginScreen = ({ navigation }) => {
               await loginUser(values);
               // TODO: Add snackbar
               alert("Welcome Back");
+              setIsSignedIn(true);
             } catch (error) {
-              console.error("Login Error", error);
               alert("Wrong Password or Email");
             }
           }}
