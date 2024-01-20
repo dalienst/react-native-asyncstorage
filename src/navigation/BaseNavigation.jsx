@@ -19,7 +19,7 @@ function BaseNavigation() {
   return (
     <NavigationContainer theme={AppTheme}>
       <Stack.Navigator
-        initialRouteName={publicLinks.Home}
+        initialRouteName="Home"
         screenOptions={{
           header: (props) => <CustomNavigationBar {...props} />,
         }}
@@ -27,17 +27,17 @@ function BaseNavigation() {
         {user ? (
           <>
             <Stack.Screen
-              name={publicLinks.Home}
+              name="Home"
               component={Home}
               options={{ title: "Tech Africa Wallet" }}
             />
             <Stack.Screen
-              name={publicLinks.Profile}
+              name="Profile"
               component={Profile}
               options={{ title: "Profile" }}
             />
             <Stack.Screen
-              name={publicLinks.Card}
+              name="Card"
               component={Card}
               options={{ title: "Card" }}
             />

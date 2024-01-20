@@ -1,7 +1,6 @@
 import React from "react";
 import { ScrollView, Text, View } from "react-native";
 import HomeProfileCard from "../components/atoms/home/HomeProfileCard";
-import { avatar } from "../assets/images/home/2024logo.png";
 import { useTheme } from "@react-navigation/native";
 
 function HomeScreen() {
