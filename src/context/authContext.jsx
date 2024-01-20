@@ -1,18 +1,14 @@
 import React, { useState, useEffect, createContext } from "react";
-import axios, { api } from "../api/axios";
+import axios from "../api/axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { urls } from "../navigation/Links";
-import jwt_decode from "jwt-decode";
+import jwtDecode from "jwt-decode";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const tokensLocalStorage = JSON.parse(localStorage.getItem("tokens"));
-  const onLoadTokens = tokensLocalStorage ? tokensLocalStorage : null;
-  const decodedToken = tokensLocalStorage
-    ? jwt_decode(tokensLocalStorage.access)
-    : null;
-  const [user, setUser] = useState(() => decodedToken);
-  const [tokens, setTokens] = useState(() => onLoadTokens);
+  const [user, setUser] = useState(null);
+  const [tokens, setTokens] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -30,29 +26,35 @@ export const AuthProvider = ({ children }) => {
   }, [tokens]);
 
   const checkAuthentication = async () => {
-    if (tokens) {
+    const storedTokens = await AsyncStorage.getItem("tokens");
+
+    if (storedTokens) {
       try {
-        const response = await api.get(`me/${user?.user_id}/`, {
-          headers: {
-            Authorization: `Bearer ${tokens.access}`,
-          },
-        });
-        setUser(response.data);
-      } catch (error) {}
+        const decodedToken = jwtDecode(storedTokens.access);
+        setUser(decodedToken);
+        setTokens(JSON.parse(storedTokens));
+      } catch (error) {
+        console.error("Error decoding token:", error);
+      }
     }
+
     setIsLoading(false);
   };
 
   const loginUser = async (inputs) => {
-    const response = await axios.post(urls.LOGIN, inputs);
-    setTokens(response.data);
-    const userID = jwt_decode(response.data.access);
-    setUser(userID);
-    localStorage.setItem("tokens", JSON.stringify(response.data));
+    try {
+      const response = await axios.post(urls.LOGIN, inputs);
+      setTokens(response.data);
+      const userID = jwtDecode(response.data.access);
+      setUser(userID);
+      await AsyncStorage.setItem("tokens", JSON.stringify(response.data));
+    } catch (error) {
+      console.error("Error logging in:", error);
+    }
   };
 
-  const logout = () => {
-    localStorage.removeItem("tokens");
+  const logout = async () => {
+    await AsyncStorage.removeItem("tokens");
     setTokens(null);
     setUser(null);
   };
@@ -64,14 +66,17 @@ export const AuthProvider = ({ children }) => {
       });
       const data = await response.json();
       setTokens(data);
-      setUser(jwt_decode(data.access));
-      localStorage.setItem("tokens", JSON.stringify(data));
-    } catch (error) {}
+      const decodedToken = jwtDecode(data.access);
+      setUser(decodedToken);
+      await AsyncStorage.setItem("tokens", JSON.stringify(data));
+    } catch (error) {
+      console.error("Error updating user:", error);
+    }
   };
 
   const authContextValue = {
     user,
-    userId: user ? user.id : null, // Include user ID in the context
+    userId: user ? user.id : null,
     isLoading,
     loginUser,
     logout,
