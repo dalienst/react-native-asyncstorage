@@ -7,11 +7,8 @@ import jwtDecode from "jwt-decode";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const storedTokens = AsyncStorage.getItem("tokens");
-  const onLoadTokens = storedTokens ? storedTokens : null;
-  const decodedToken = storedTokens ? jwtDecode(storedTokens.access) : null;
-  const [user, setUser] = useState(() => decodedToken);
-  const [tokens, setTokens] = useState(() => onLoadTokens);
+  const [user, setUser] = useState(null);
+  const [tokens, setTokens] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSignedIn, setIsSignedIn] = useState(false);
 
@@ -21,29 +18,59 @@ export const AuthProvider = ({ children }) => {
       setTokens(response.data);
       const userID = jwtDecode(response.data.access);
       setUser(userID);
-      AsyncStorage.setItem("tokens", JSON.stringify(response.data));
+      await AsyncStorage.setItem("tokens", JSON.stringify(response.data));
       setIsSignedIn(true);
     } catch (error) {}
   };
 
   const logout = async () => {
-    await AsyncStorage.removeItem("tokens");
-    setTokens(null);
-    setUser(null);
+    try {
+      await AsyncStorage.removeItem("tokens");
+      setTokens(null);
+      setUser(null);
+    } catch (error) {}
   };
 
   const updateUser = async () => {
     try {
-      const response = await axios.post(urls.REFRESH, {
-        refresh: tokens.refresh,
-      });
-      const data = await response.json();
-      setTokens(data);
-      const decodedToken = jwtDecode(data.access);
-      setUser(decodedToken);
-      await AsyncStorage.setItem("tokens", JSON.stringify(data));
-    } catch (error) {}
+      const storedTokens = await AsyncStorage.getItem("tokens");
+
+      if (storedTokens) {
+        const response = await axios.post(urls.REFRESH, {
+          refresh: JSON.parse(storedTokens).refresh,
+        });
+
+        const data = response.data;
+        setTokens(data);
+        const decodedToken = jwtDecode(data.access);
+        setUser(decodedToken);
+        await AsyncStorage.setItem("tokens", JSON.stringify(data));
+      }
+    } catch (error) {
+      console.error("Error updating user:", error);
+    }
   };
+
+  useEffect(() => {
+    // Check authentication status on app start
+    const checkAuthentication = async () => {
+      try {
+        const storedTokens = await AsyncStorage.getItem("tokens");
+
+        if (storedTokens) {
+          const decodedToken = jwtDecode(JSON.parse(storedTokens).access);
+          setUser(decodedToken);
+          setTokens(JSON.parse(storedTokens));
+        }
+      } catch (error) {
+        console.error("Error decoding token:", error);
+      }
+
+      setIsLoading(false);
+    };
+
+    checkAuthentication();
+  }, []);
 
   useEffect(() => {
     // refresh user
@@ -57,18 +84,20 @@ export const AuthProvider = ({ children }) => {
     return () => clearInterval(interval);
   }, [tokens]);
 
+  const authContextValue = {
+    user,
+    loginUser,
+    tokens,
+    logout,
+    isSignedIn,
+    setIsSignedIn,
+    isLoading,
+    setUser,
+    setTokens,
+  };
+
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loginUser,
-        tokens,
-        logout,
-        isSignedIn,
-        setIsSignedIn,
-        isLoading,
-      }}
-    >
+    <AuthContext.Provider value={authContextValue}>
       {children}
     </AuthContext.Provider>
   );

@@ -4,13 +4,12 @@ import HomeProfileCard from "../components/atoms/home/HomeProfileCard";
 import { useTheme } from "@react-navigation/native";
 import { AuthContext } from "../context/authContext";
 import { api } from "../api/axios";
+import { jwtDecode } from "jwt-decode";
 
 function HomeScreen() {
   const { colors } = useTheme();
   const { user, tokens } = useContext(AuthContext);
   const [person, setPerson] = useState([]);
-
-  console.log(user)
 
   const fetchPerson = async () => {
     if (!user?.user_id) {
