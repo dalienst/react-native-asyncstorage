@@ -1,17 +1,16 @@
 import React, { useContext, useState, useEffect } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import HomeProfileCard from "../components/atoms/home/HomeProfileCard";
 import { useTheme } from "@react-navigation/native";
 import { AuthContext } from "../context/authContext";
 import { api } from "../api/axios";
-import { jwtDecode } from "jwt-decode";
-import JWT from "expo-jwt";
 import base64 from "react-native-base64";
 
 function HomeScreen() {
   const { colors } = useTheme();
   const { user, tokens } = useContext(AuthContext);
   const [person, setPerson] = useState([]);
+  const [profile, setProfile] = useState([]);
 
   const decodedTokens = base64.decode(tokens.split(".")[1]);
   const decodedTokensObject = JSON.parse(decodedTokens);
@@ -31,8 +30,23 @@ function HomeScreen() {
     } catch (error) {}
   };
 
+  const fetchProfile = async () => {
+    if (!userID) {
+      return;
+    }
+    try {
+      const response = await api.get(`profile/${userID}/`, {
+        headers: {
+          Authorization: `Bearer ${tokens}`,
+        },
+      });
+      setProfile(response?.data);
+    } catch (error) {}
+  };
+
   useEffect(() => {
     fetchPerson();
+    fetchProfile();
   }, [user]);
 
   return (
@@ -40,9 +54,12 @@ function HomeScreen() {
       <HomeProfileCard
         title={person.username}
         subtitle={person.email}
-        imageSource={require("../assets/images/home/2024logo.png")}
+        imageSource={
+          profile.image
+            ? { uri: profile.image }
+            : require("../assets/images/home/2024logo.png")
+        }
       />
-      <View></View>
     </ScrollView>
   );
 }

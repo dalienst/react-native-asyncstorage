@@ -2,7 +2,6 @@ import React, { useState, useEffect, createContext } from "react";
 import axios from "../api/axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { urls } from "../navigation/Links";
-import JWT from "expo-jwt";
 import base64 from "react-native-base64";
 
 export const AuthContext = createContext();
