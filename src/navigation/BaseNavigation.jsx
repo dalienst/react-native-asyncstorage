@@ -1,40 +1,60 @@
-import React from "react";
+import React, { useContext } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { publicLinks } from "./Links";
 import { AppTheme } from "../assets/themes/Themes";
 import CustomNavigationBar from "../components/layouts/CustomNavigationBar";
+import { useAuth } from "../context/useAuth";
+import SplashScreen from "../screens/SplashScreen";
+import HomeScreen from "../screens/HomeScreen";
+import ProfileScreen from "../screens/ProfileScreen";
+import CardScreen from "../screens/CardScreen";
+import LoginScreen from "../screens/LoginScreen";
+import SignupScreen from "../screens/SignupScreen";
+import { AuthContext } from "../context/authContext";
 
 const Stack = createNativeStackNavigator();
 
-const Home = React.lazy(() => import("../screens/HomeScreen"));
-const Profile = React.lazy(() => import("../screens/ProfileScreen"));
-const Card = React.lazy(() => import("../screens/CardScreen"));
-
 function BaseNavigation() {
+  const { isLoading, isSignedIn } = useContext(AuthContext);
+
+  // if (isLoading) {
+  //   // We haven't finished checking for the token yet
+  //   return <SplashScreen />;
+  // }
   return (
     <NavigationContainer theme={AppTheme}>
       <Stack.Navigator
-        initialRouteName={publicLinks.Home}
+        initialRouteName="Splash"
         screenOptions={{
           header: (props) => <CustomNavigationBar {...props} />,
         }}
       >
-        <Stack.Screen
-          name={publicLinks.Home}
-          component={Home}
-          options={{ title: "Home" }}
-        />
-        <Stack.Screen
-          name={publicLinks.Profile}
-          component={Profile}
-          options={{ title: "Profile" }}
-        />
-        <Stack.Screen
-          name={publicLinks.Card}
-          component={Card}
-          options={{ title: "Card" }}
-        />
+        
+        {isSignedIn ? (
+          <>
+            <Stack.Screen
+              name="Home"
+              component={HomeScreen}
+              options={{ title: "Tech Africa Wallet" }}
+            />
+            <Stack.Screen
+              name="Profile"
+              component={ProfileScreen}
+              options={{ title: "Profile" }}
+            />
+            <Stack.Screen
+              name="Card"
+              component={CardScreen}
+              options={{ title: "Card" }}
+            />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name={publicLinks.Login} component={LoginScreen} />
+            <Stack.Screen name={publicLinks.Signup} component={SignupScreen} />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,10 +1,10 @@
 const AppTheme = {
   dark: false,
   colors: {
-    appbar:"#f8800a",
+    appbar:"#245549",
     appbarTitle: "#ffffff",
-    primary: 'rgb(255, 45, 85)',
-    background: 'rgb(242, 242, 242)',
+    primary: '#245549',
+    background: '#d5d5d5',
     card: 'rgb(255, 255, 255)',
     text: 'rgb(28, 28, 30)',
     border: 'rgb(199, 199, 204)',
