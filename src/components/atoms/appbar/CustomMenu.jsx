@@ -4,7 +4,7 @@ import { useAuth } from "../../../context/useAuth";
 import { publicLinks } from "../../../navigation/Links";
 
 const CustomMenu = ({ navigation }) => {
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, logout, setIsSignedIn } = useAuth();
   const [visible, setVisible] = React.useState(false);
 
   const openMenu = () => setVisible(true);
@@ -32,6 +32,13 @@ const CustomMenu = ({ navigation }) => {
             <Menu.Item
               title="Card"
               onPress={() => navigation.navigate(publicLinks.Card)}
+            />
+            <Menu.Item
+              title="Log Out"
+              onPress={() => {
+                logout();
+                setIsSignedIn(false);
+              }}
             />
           </>
         ) : (
