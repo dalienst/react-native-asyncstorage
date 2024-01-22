@@ -5,20 +5,26 @@ import { useTheme } from "@react-navigation/native";
 import { AuthContext } from "../context/authContext";
 import { api } from "../api/axios";
 import { jwtDecode } from "jwt-decode";
+import JWT from "expo-jwt";
+import base64 from "react-native-base64";
 
 function HomeScreen() {
   const { colors } = useTheme();
   const { user, tokens } = useContext(AuthContext);
   const [person, setPerson] = useState([]);
 
+  const decodedTokens = base64.decode(tokens.split(".")[1]);
+  const decodedTokensObject = JSON.parse(decodedTokens);
+  const userID = decodedTokensObject.user_id;
+
   const fetchPerson = async () => {
-    if (!user?.user_id) {
+    if (!userID) {
       return;
     }
     try {
-      const response = await api.get(`me/${user?.user_id}/`, {
+      const response = await api.get(`me/${userID}/`, {
         headers: {
-          Authorization: `Bearer ${tokens?.access}`,
+          Authorization: `Bearer ${tokens}`,
         },
       });
       setPerson(response?.data);
@@ -33,9 +39,10 @@ function HomeScreen() {
     <ScrollView style={{ backgroundColor: colors.background, padding: 5 }}>
       <HomeProfileCard
         title={person.username}
-        subtitle="Dalienst Owino"
+        subtitle={person.email}
         imageSource={require("../assets/images/home/2024logo.png")}
       />
+      <View></View>
     </ScrollView>
   );
 }

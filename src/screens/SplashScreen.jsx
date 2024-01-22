@@ -4,8 +4,8 @@ import { Text } from 'react-native-paper'
 
 function SplashScreen() {
   return (
-    <View style={{flex:1}}>
-        <Text>Hello</Text>
+    <View style={{flex:1, justifyContent:"center", alignItems:'center'}}>
+        <Text>SplashScreen</Text>
     </View>
   )
 }

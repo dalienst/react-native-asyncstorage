@@ -18,10 +18,10 @@ const Stack = createNativeStackNavigator();
 function BaseNavigation() {
   const { isLoading, isSignedIn } = useContext(AuthContext);
 
-  if (isLoading) {
-    // We haven't finished checking for the token yet
-    return <SplashScreen />;
-  }
+  // if (isLoading) {
+  //   // We haven't finished checking for the token yet
+  //   return <SplashScreen />;
+  // }
   return (
     <NavigationContainer theme={AppTheme}>
       <Stack.Navigator
@@ -30,6 +30,7 @@ function BaseNavigation() {
           header: (props) => <CustomNavigationBar {...props} />,
         }}
       >
+        
         {isSignedIn ? (
           <>
             <Stack.Screen

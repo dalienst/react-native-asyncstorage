@@ -2,7 +2,8 @@ import React, { useState, useEffect, createContext } from "react";
 import axios from "../api/axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { urls } from "../navigation/Links";
-import jwtDecode from "jwt-decode";
+import JWT from "expo-jwt";
+import base64 from "react-native-base64";
 
 export const AuthContext = createContext();
 
@@ -15,10 +16,14 @@ export const AuthProvider = ({ children }) => {
   const loginUser = async (inputs) => {
     try {
       const response = await axios.post(urls.LOGIN, inputs);
-      setTokens(response.data);
-      const userID = jwtDecode(response.data.access);
-      setUser(userID);
-      await AsyncStorage.setItem("tokens", JSON.stringify(response.data));
+      setTokens(response.data.access);
+      const decodedTokens = base64.decode(response.data.access.split(".")[1]);
+      const decodedTokensObject = JSON.parse(decodedTokens);
+      setUser(decodedTokensObject?.user_id);
+      await AsyncStorage.setItem(
+        "tokens",
+        JSON.stringify(response.data.access)
+      );
       setIsSignedIn(true);
     } catch (error) {}
   };
@@ -28,9 +33,11 @@ export const AuthProvider = ({ children }) => {
       await AsyncStorage.removeItem("tokens");
       setTokens(null);
       setUser(null);
+      setIsSignedIn(false);
     } catch (error) {}
   };
 
+  // TODO: correct the tokens decoding
   const updateUser = async () => {
     try {
       const storedTokens = await AsyncStorage.getItem("tokens");
@@ -42,39 +49,17 @@ export const AuthProvider = ({ children }) => {
 
         const data = response.data;
         setTokens(data);
-        const decodedToken = jwtDecode(data.access);
-        setUser(decodedToken);
+        const decodedToken = base64.decode(data.access.split(".")[1]);
+        const decodedTokenObject = JSON.parse(decodedToken);
+        setUser(decodedTokenObject);
         await AsyncStorage.setItem("tokens", JSON.stringify(data));
       }
-    } catch (error) {
-      console.error("Error updating user:", error);
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
-    // Check authentication status on app start
-    const checkAuthentication = async () => {
-      try {
-        const storedTokens = await AsyncStorage.getItem("tokens");
-
-        if (storedTokens) {
-          const decodedToken = jwtDecode(JSON.parse(storedTokens).access);
-          setUser(decodedToken);
-          setTokens(JSON.parse(storedTokens));
-        }
-      } catch (error) {
-        console.error("Error decoding token:", error);
-      }
-
-      setIsLoading(false);
-    };
-
-    checkAuthentication();
-  }, []);
-
-  useEffect(() => {
     // refresh user
-    const tenMinutes = 1000 * 60 * 30;
+    const tenMinutes = 1000 * 60 * 60;
     const interval = setInterval(() => {
       if (!tokens) {
         updateUser();
